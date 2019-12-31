@@ -1,0 +1,71 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'多人博客 - 首页'}}{{/block}}
+
+{{block 'body'}}
+<section class="container">
+  {{include '../_partials/settings-nav.html'}}
+  <div class="col-md-5">
+    <div class="subhead">
+      <h2>修改密码</h2>
+    </div>
+    <hr>
+    <form>
+      <div class="form-group">
+        <label >新的密码</label>
+        <input type="password" name="password" id="psw1" class="form-control" required="required">
+      </div>
+      <div class="form-group">
+        <label >确认密码</label>
+        <input type="password"  id="psw2" class="form-control" required>
+      </div>
+      <button type="button" id="submit" class="btn btn-success">保存</button>
+    </form>
+    <div class="subhead">
+      <h2>注销账号</h2>
+      <hr>
+    </div>
+    <div>
+      <p>一旦注销，不可找回，请谨慎操作</p>
+      <button class="btn btn-danger" id="delUser">删除</button>
+    </div>
+    <hr>
+  </div>
+</section>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+  $(function () {
+    $("#submit").click(function () {
+      let psw1 = $("#psw1").val()
+      let psw2 = $("#psw2").val()
+      if(psw1!=psw2){
+        alert('两次输入的密码不一致')
+        return false;
+      }
+      if (psw1==''||psw2==''){
+        alert('请输入密码！')
+        return false;
+      }
+      $.post('/settings/admin',{password:psw1},function (data) {
+          if (data.err_code == 1){
+            alert('密码修改成功！请重新登录')
+            window.location.href='/login'
+          }
+      })
+    })
+
+    $("#delUser").click(function () {
+      let r = confirm('真的要注销用户吗？注销以后所有信息都不可找回！！！')
+      if (r){
+        $.post('/settings/delUser',function (data) {
+          if (data.err_code == 0){
+            alert('未登录！')
+          } else if (data.err_code ==1){
+            window.location.href ='/'
+          }
+        })
+      }
+    })
+  })
+</script>
+{{/block}}

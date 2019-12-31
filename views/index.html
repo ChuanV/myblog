@@ -1,0 +1,99 @@
+{{extend './_layouts/home.html'}}
+
+{{block 'title'}}{{'iSharing - 首页'}}{{/block}}
+
+{{block 'body'}}
+<style>
+  .newtitle{
+    font-size: 13px;
+    color: #999;
+  }
+  .newtitle span{
+    margin: 0 10px;
+    padding: 0 4px;
+  }
+  .well{
+    padding: 10px;
+    margin-bottom:5px
+  }
+</style>
+<section class="container">
+  <ul class="media-list wenzhang">
+    {{ each article }}
+    <li class="media well">
+      <div class="media-left">
+        <a href="#">
+          <img width="40" height="40" class="media-object" src={{$value.avatar}} alt="...">
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading"><a href="/topics/123">{{$value.contentTitle}}</a></h4>
+        <p class="newtitle">{{$value.nickname}}
+          <span>发布时间:{{$value.created_time}}</span>
+          <span class="glyphicon glyphicon-eye-open pull-right">{{$value.PV}}</span>
+          <span class="glyphicon glyphicon-comment pull-right">{{$value.comment}}</span>
+          <input type="hidden" value={{$value._id}} class="_id">
+        </p>
+      </div>
+    </li>
+    {{ /each }}
+  </ul>
+  <nav aria-label="Page navigation">
+    <ul class="pagination" id="list">
+      <li id="previous">
+        <a href="javascript:void(0);" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+      </li>
+      <li><a readonly="true">{{page}} / {{totalPage}}</a></li>
+      <li id="next">
+        <a href="javascript:void(0);" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <input type="hidden" id="totalPage" value={{totalPage}}>
+  <input type="hidden" id="page" value={{page}}>
+</section>
+
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+  $(function () {
+    let totalPage = $('#totalPage').val()
+    let page = $('#page').val()
+
+    if (page == 1) {
+      $('#previous').addClass('disabled')
+    }else if (page == totalPage) {
+      $('#next').addClass('disabled')
+    }
+    //点击事件
+    $('#previous').click(function () {
+      page--
+      if (page<1){
+        page = 1
+        return false;
+      }
+      window.location.href = '/?page=' + page
+    })
+  $('#next').click(function () {
+    page++
+    if (page>totalPage){
+      page = totalPage
+      return false;
+    }
+    window.location.href = '/?page=' + page
+  })
+
+
+    $('.wenzhang').find('li').click(function () {
+      let id = $(this).find('input._id').val()
+      id = id.replace(/\"/g,"")
+      window.location.href = '/topics/show?id=' + id
+
+    })
+
+})
+</script>
+{{/block}}

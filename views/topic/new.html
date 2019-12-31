@@ -1,0 +1,71 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'多人博客 - 首页'}}{{/block}}
+
+{{block 'body'}}
+<section class="container">
+  <div class="row">
+    <div class="col-md-5">
+      <form>
+        <div class="form-group">
+          <label >选择板块</label>
+          <select class="form-control">
+            <option>分享</option>
+            <option>问答</option>
+            <option>招聘</option>
+            <option>客户端测试</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label >标题</label>
+          <input type="text" class="form-control" maxlength="30" id="newTitle">
+        </div>
+        <div class="form-group">
+          <label>内容</label>
+        </div>
+    </div>
+    <div style="clear: both"></div>
+    <div id="editor"></div>
+    <br>
+    <button type="button" class="btn btn-default pull-right" id="publicNew">Submit</button>
+    </form>
+  </div>
+  <div id="mycontent"></div>
+</section>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script src="/node_modules/wangeditor/release/wangEditor.js"></script>
+<script>
+  var E = window.wangEditor
+  var editor = new E('#editor')
+  editor.customConfig.pasteFilterStyle = false
+  editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+  editor.customConfig.uploadImgServer = '/upload'  // 上传图片到服务器
+
+  editor.create()
+  $(function () {
+    $('#publicNew').click(function () {
+      let content = editor.txt.html()
+      let contentText = editor.txt.text()
+      let title = $('#newTitle').val()
+      // if (contentText.length<11){
+      //   alert('请输入字数大于10')
+      //   return false;
+      // }
+      $.ajax({
+        url:'/topics/new',
+        type:'post',
+        dataType:'json',
+        data:{title:title,content:content},
+        success:function (data) {
+          // console.log(data)
+          // $('#mycontent').html(data.content)
+          if (data.err_code == 1){
+            window.location.href ='/'
+          }
+        }
+      })
+      // console.log(content)
+    })
+  })
+</script>
+{{/block}}

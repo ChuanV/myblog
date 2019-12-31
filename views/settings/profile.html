@@ -1,0 +1,122 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'多人博客 - 首页'}}{{/block}}
+
+{{block 'body'}}
+<style>
+  .fileinput-button {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+  }
+
+  .fileinput-button input{
+    position:absolute;
+    right: 0px;
+    top: 0px;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px;
+  }
+</style>
+<section class="container">
+  {{include '../_partials/settings-nav.html'}}
+  <div class="col-md-5">
+    <form method="post"  action="/settings/profile">
+      <div class="form-group">
+        <label for="exampleInputEmail1">账号</label>
+        <p class="form-control-static">{{ user.email }}</p>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">昵称</label>
+        <input type="text" class="form-control" name="nickname" value={{ user.nickname }}>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">介绍</label>
+        <textarea class="form-control"  name="bio" rows="3"> {{ user.bio }}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">性别</label>
+        <div>
+          {{ if user.gender == 1}}
+          <label class="radio-inline">
+            <input type="radio" name="gender"  value="1" checked> 男
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="0" > 女
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="gender"  value="-1"> 保密
+          </label>
+          {{ else if user.gender == 0 }}
+          <label class="radio-inline">
+            <input type="radio" name="gender"  value="1" > 男
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="0" checked> 女
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="gender"  value="-1"> 保密
+          </label>
+          {{ else }}
+          <label class="radio-inline">
+            <input type="radio" name="gender"  value="1" > 男
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="gender"  value="0" > 女
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="gender"  value="-1" checked> 保密
+          </label>
+          {{/if}}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">生日</label>
+        <input type="date" class="form-control" name="birthday" value={{user.birthday}}>
+      </div>
+      <button type="submit" class="btn btn-success" >保存</button>
+    </form>
+  </div>
+  <div class="col-md-2 profile-avatar">
+    <dl>
+      <dt>头像设置</dt>
+      <dd>
+        <img class="avatar" width="150" height="150" src={{ user.avatar }} alt="头像">
+        <div>
+          <form id="avatarform" action="/settings/avatar" enctype="multipart/form-data" method="post">
+            <span class="btn btn-default fileinput-button">
+            <span>选择头像</span>
+            <input type="file" name="avatar"  id="avatar" >
+          </span>
+            <input type="submit" class="btn btn-default" value="上传"  id="avatarSubmit">
+          </form>
+        </div>
+      </dd>
+    </dl>
+  </div>
+</section>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+  $(function () {
+    $("#avatarSubmit").click(function () {
+      let myfile = $('#avatar')[0].files[0]
+      if (!myfile) {
+        alert("未选择图片")
+        event.preventDefault()
+        return false;
+      }
+    })
+    $("#avatarSubmit").hide()
+    $("#avatar").change(function () {
+      var reader = new FileReader();
+      var file = document.getElementById("avatar").files;
+      reader.readAsDataURL(file[0]);
+      reader.onload = function () {
+        document.getElementsByClassName("avatar")[0].src = reader.result;
+        $("#avatarSubmit").show()
+      }
+    })
+  })
+</script>
+{{/block}}
